@@ -6,7 +6,7 @@
 			"args": ["dist/index.js"],
 			"cwd": "${workspaceFolder}",
 			"dev": {
-				"watch": "dist/**/*.ts",
+				"watch": "dist/**/*.js",
 				"debug": {
 					"type": "node"
 				}
