@@ -3,16 +3,20 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import fs from "fs";
 import { CreateMessageRequestSchema, CreateMessageResultSchema } from "@modelcontextprotocol/sdk/types.js";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 // Create an MCP server
 const server = new McpServer({
   name: "demo-server",
   version: "1.0.0"
 });
 
-
 const UserSchema = z.object({
   name: z.string(),
   email: z.string().email()
+});
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_API_KEY!,
 });
 
 server.registerTool("create_user",
@@ -101,6 +105,28 @@ server.resource("User",  'users://all', {
 // server.resource
 
 
+server.prompt(
+  "generate-fake-user",
+  "Generate a fake user",
+  {
+    name: z.string(),
+  },
+  ({name}) => {
+    return {
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `Generate fake user data for ${name}. The user name is ${name}. The user should have a realistic email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with JSON.parse.`,
+          },
+        }
+      ]
+    }
+  }
+)
+
+
 const getUsers = async () => {
   const users =  await fs.readFileSync("./dummy-db/user.json", "utf-8");
   return JSON.parse(users);
@@ -126,7 +152,7 @@ const transport = new StdioServerTransport();
 const main = async () => {
   console.log("starting server");
   await server.connect(transport);
-  console.log("transport connected");
+  console.log("transport connected");~
   console.log("server connected");
 }
 

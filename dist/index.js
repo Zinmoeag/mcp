@@ -8,6 +8,7 @@ const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const zod_1 = require("zod");
 const fs_1 = __importDefault(require("fs"));
 const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
+const google_1 = require("@ai-sdk/google");
 // Create an MCP server
 const server = new mcp_js_1.McpServer({
     name: "demo-server",
@@ -16,6 +17,9 @@ const server = new mcp_js_1.McpServer({
 const UserSchema = zod_1.z.object({
     name: zod_1.z.string(),
     email: zod_1.z.string().email()
+});
+const google = (0, google_1.createGoogleGenerativeAI)({
+    apiKey: process.env.GOOGLE_API_KEY,
 });
 server.registerTool("create_user", {
     title: "Create User Tool",
@@ -88,6 +92,21 @@ server.resource("User", 'users://all', {
     };
 });
 // server.resource
+server.prompt("generate-fake-user", "Generate a fake user", {
+    name: zod_1.z.string(),
+}, ({ name }) => {
+    return {
+        messages: [
+            {
+                role: "user",
+                content: {
+                    type: "text",
+                    text: `Generate fake user data for ${name}. The user name is ${name}. The user should have a realistic email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with JSON.parse.`,
+                },
+            }
+        ]
+    };
+});
 const getUsers = async () => {
     const users = await fs_1.default.readFileSync("./dummy-db/user.json", "utf-8");
     return JSON.parse(users);
@@ -109,7 +128,7 @@ const main = async () => {
     console.log("starting server");
     await server.connect(transport);
     console.log("transport connected");
-    console.log("server connected");
+    ~console.log("server connected");
 };
 main();
 //# sourceMappingURL=index.js.map
