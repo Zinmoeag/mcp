@@ -20,11 +20,11 @@ const main = async () => {
     console.log("starting client");
     await mcp.connect(transport);
     console.log("client connected");
-    const [{ tools }, { resources }] = await Promise.all([
+    const [{ tools }, { resources }, { resourceTemplates }] = await Promise.all([
         mcp.listTools(),
         mcp.listResources(),
+        mcp.listResourceTemplates(),
         //   mcp.listPrompts(),
-        //   mcp.listResourceTemplates(),
     ]);
     while (true) {
         const option = await (0, prompts_1.select)({
@@ -50,17 +50,24 @@ const main = async () => {
                 }
                 break;
             case "Resources":
+                const avaiableResources = [
+                    ...resources.map((resource) => ({
+                        name: resource.name,
+                        value: resource.uri,
+                        description: resource.description,
+                    })),
+                    ...resourceTemplates.map((template) => ({
+                        name: template.name,
+                        value: template.uri,
+                        description: template.description,
+                    })),
+                ];
+                console.log(avaiableResources, "avaiableResources ====");
                 const resourceUri = await (0, prompts_1.select)({
                     message: "Select a resource",
-                    choices: [
-                        ...resources.map((resource) => ({
-                            name: resource.name,
-                            value: resource.uri,
-                            description: resource.description,
-                        })),
-                    ]
+                    choices: avaiableResources
                 });
-                const uri = resources.find(r => r.uri === resourceUri)?.uri;
+                const uri = resources.find(r => r.uri === resourceUri)?.uri ?? resourceTemplates.find(r => r.uriTemplate === resourceUri)?.uriTemplate;
                 console.log(uri, "uri");
                 if (uri == null) {
                     console.error("Resource not found.");

@@ -23,12 +23,12 @@ const main = async () => {
     console.log("starting client");
     await mcp.connect(transport);
     console.log("client connected");
-    const [{ tools }, { resources}] =
+    const [{ tools }, { resources}, {resourceTemplates}] =
     await Promise.all([
       mcp.listTools(),
       mcp.listResources(),
+      mcp.listResourceTemplates(),
     //   mcp.listPrompts(),
-    //   mcp.listResourceTemplates(),
     ])
 
 
@@ -56,17 +56,26 @@ const main = async () => {
                 }
                 break;
             case "Resources":
-                const resourceUri = await select({
-                    message: "Select a resource",
-                    choices: [
+                const avaiableResources = [
                         ...resources.map((resource) => ({
                             name: resource.name,
                             value: resource.uri,
                             description: resource.description,
                         })),
-                    ]
+                        ...resourceTemplates.map((template) => ({
+                            name: template.name,
+                            value: template.uri,
+                            description: template.description,
+                        })),
+                    ];
+                
+                console.log(avaiableResources, "avaiableResources ====");
+
+                const resourceUri = await select({
+                    message: "Select a resource",
+                    choices: avaiableResources
                 })
-                const uri = resources.find(r => r.uri === resourceUri)?.uri;
+                const uri = resources.find(r => r.uri === resourceUri)?.uri ?? resourceTemplates.find(r => r.uriTemplate === resourceUri)?.uriTemplate;
                 console.log(uri, "uri");
 
                 if (uri == null) {
