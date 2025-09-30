@@ -7,6 +7,7 @@ const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const zod_1 = require("zod");
 const fs_1 = __importDefault(require("fs"));
+const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
 // Create an MCP server
 const server = new mcp_js_1.McpServer({
     name: "demo-server",
@@ -28,6 +29,47 @@ server.registerTool("create_user", {
     return {
         content: [{ type: "text", text: `User ${id} created with email` }]
     };
+});
+server.tool("create_random_user", "Create Random User", {
+    title: "Create Random User Tool",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+}, async () => {
+    const res = await server.server.request({
+        method: "sampling/createMessage",
+        params: {
+            messages: [
+                {
+                    role: "user",
+                    content: {
+                        type: "text",
+                        text: "Generate fake user data. The user should have a realistic Burmese name, email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with JSON.parse.",
+                    },
+                },
+            ],
+            maxTokens: 1024,
+        },
+    }, types_js_1.CreateMessageResultSchema);
+    console.log("Response from model:", res);
+    if (res.content.type !== "text") {
+        throw new Error("Invalid response from model");
+    }
+    try {
+        const parsed = JSON.parse(res.content.text.trim().replace(/^```json/, '').replace(/```$/, '').trim());
+        const id = await createUser(parsed);
+        console.log("Created user with id:", id);
+        return {
+            content: [{ type: "text", text: `User ${id} created with email` }]
+        };
+    }
+    catch (e) {
+        return {
+            content: [{ type: "text", text: `Error creating user: ${e}, ${JSON.stringify(res)}` }]
+        };
+    }
+    // const id = await createUser(JSON.parse(res.content.text));
 });
 server.resource("User", 'users://all', {
     description: "A list of all users",

@@ -28,5 +28,24 @@
     "id": "006",
     "name": "tin ay",
     "email": "ay@gmail.com"
+  },
+  {
+    "id": "007",
+    "name": "he",
+    "email": "dfdf@gmail.com"
+  },
+  {
+    "id": "008",
+    "name": "Emily Carter",
+    "email": "emily.carter82@example.com",
+    "address": "742 Maplewood Drive, Springfield, IL 62704",
+    "phone": "(217) 555-0198"
+  },
+  {
+    "id": "009",
+    "name": "Aung Min Htet",
+    "email": "aungminhtet.mm@gmail.com",
+    "address": "No. 23, 5th Street, Kamayut Township, Yangon, Myanmar",
+    "phone": "+95 9 420123456"
   }
 ]
