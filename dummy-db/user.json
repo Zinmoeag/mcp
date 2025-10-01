@@ -62,5 +62,35 @@
     "id": "012",
     "name": "hello ",
     "email": "mello@gmail.com"
+  },
+  {
+    "id": "013",
+    "name": "zin",
+    "email": "moe@gmail.com"
+  },
+  {
+    "id": "014",
+    "name": "zaw win htut",
+    "email": "win@gmail.com"
+  },
+  {
+    "id": "015",
+    "name": "Aung Myat Thu",
+    "email": "aung.myat.thu89@example.com",
+    "address": "No. 42, Shwe Taung Tan Street, Bahan Township, Yangon",
+    "phone_number": "+959421002876"
+  },
+  {
+    "id": "016",
+    "name": "Aye Myat Thu",
+    "email": "aye.myat.thu88@example.com",
+    "address": {
+      "street": "No. 25, Bogyoke Aung San Road",
+      "township": "Kamayut Township",
+      "city": "Yangon",
+      "state": "Yangon Region",
+      "postal_code": "11041"
+    },
+    "phone_number": "+959421000876"
   }
 ]
